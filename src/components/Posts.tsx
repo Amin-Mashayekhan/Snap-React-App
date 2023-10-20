@@ -2,25 +2,23 @@ import { useEffect, useState } from "react"
 import { Post } from "../types";
 import { Container, Spinner } from "react-bootstrap";
 
-export default function Posts() {
+export default function Posts( { username } : { username: string | boolean }) {
 
   const [posts, setPosts] = useState<Array<Post>>([])
-
   useEffect(()=>{
     console.log('in effect');
     getPosts()
   },[])
 
   async function getPosts(){
-    console.log('in async')
-      const res = await fetch('https://fakebook-matrix-130.onrender.com/post/',{
+    const endpoint = username ? `user/${username}` : 'post/'
+      const res = await fetch(`https://fakebook-matrix-130.onrender.com/${endpoint}`,{
         method:"GET",
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}`}
       })
       if(res.ok){
         const postsData = await res.json()
-        console.log(postsData)
-        setPosts(postsData)
+        setPosts(username? postsData.posts : postsData)
       } else console.log('bad request')
   }
 
@@ -29,7 +27,7 @@ export default function Posts() {
     <Container>
       
       { posts.length > 0 ?
-        posts.map((post:Post) => <p>{post.body}</p>) :
+        posts.map((post:Post, i:number) => <p key={i}>{post.body}</p>) :
         <Spinner />
         }
       

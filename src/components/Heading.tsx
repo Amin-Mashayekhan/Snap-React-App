@@ -1,12 +1,14 @@
-import { useContext, useEffect } from 'react';
-import { Navbar } from 'react-bootstrap'
+import { FormEvent, useContext, useEffect, useRef } from 'react';
+import { Button, Col, Form, Navbar, Row } from 'react-bootstrap'
 import Nav from 'react-bootstrap/Nav';
 import Container from 'react-bootstrap/esm/Container';
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { UserContext } from '../contexts/UserProvider';
 
 export default function Heading(): JSX.Element {
   const { user } = useContext(UserContext)
+  const userSearchField = useRef<HTMLInputElement>(null)
+  const navigate = useNavigate()
 
   useEffect(()=>{
     if (localStorage.getItem('token') && !user.token){
@@ -29,6 +31,25 @@ export default function Heading(): JSX.Element {
           </Nav.Item> 
         </> :
         <>
+        <Form /* inline */ onSubmit={(e:FormEvent<HTMLElement>) => {
+            e.preventDefault()
+            navigate(`/user/${userSearchField.current!.value}`)
+          }}>
+          <Row>
+            <Col xs="auto">
+              <Form.Control
+                type="text"
+                placeholder="Search"
+                className=" mr-sm-2"
+                ref= {userSearchField}
+                required
+              />
+            </Col>
+            <Col xs="auto">
+              <Button type="submit">Search</Button>
+            </Col>
+          </Row>
+        </Form>
           <Nav.Item>
             <Nav.Link as={NavLink} to='/delete-user'>Delete Profile</Nav.Link>
           </Nav.Item>

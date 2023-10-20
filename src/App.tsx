@@ -12,6 +12,7 @@ import Users from './components/Users';
 import DeleteForm from './components/forms/DeleteForm';
 import Posts from './components/Posts';
 import PostForm from './components/forms/PostForm';
+import UserPage from './pages/UserPage';
 
 function App(): JSX.Element {
   return (
@@ -37,7 +38,8 @@ function App(): JSX.Element {
                                                 <DeleteForm />
                                               </FormPage>}/>
           <Route path='/logout' element={<Logout />}/>
-          <Route path='/feed' element={<SocialPage><Posts /></SocialPage>}/>
+          <Route path='/user/:username' element={<UserPage />}/>
+          <Route path='/feed' element={<SocialPage><Posts username={false} /></SocialPage>}/>
           <Route path='*' element={<Navigate to='/' />}/>
         </Routes>
       </BrowserRouter>
