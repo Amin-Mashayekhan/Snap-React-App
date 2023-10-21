@@ -8,9 +8,9 @@ export default function Instructors() {
   };
 
   return (
-    <>
-      <h3>Instructors</h3>
+    <div className="mb-4">
+      <h3 className="pb-1">Instructors</h3>
       <p>Sr: {instructors.senior} Associate {instructors['associate']}</p>
-    </>
+    </div>
   )
 }
