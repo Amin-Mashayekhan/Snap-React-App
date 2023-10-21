@@ -1,9 +1,9 @@
-export type LoggedUser = {
+export type LoggedUserDetailsType = {
   token: string
   username: string
 }
 
-export type User = {
+export type UserDetailsType = {
   readonly id?: string
   username: string
   password: string
