@@ -1,3 +1,21 @@
+# Snap React App
+
+## react moalem
+### https://github.com/VanLance/Matrix-Social-React.git
+
+## server milad
+### https://snaptransportation.onrender.com/ 
+
+## flask milad
+### https://github.com/MiladJangjoo/snap
+
+## datasql
+### https://www.elephantsql.com/
+
+#### miladjangjooo@gmail.com
+#### pass: AminMilad
+
+
 When do you know to use useEffect? I don’t understand why we use that vs. making a different function with if/else statements.
 
 Can you explain useContext again? I watched some videos on it and how it supposedly helps to prevent chaining too many props together, but it never looked like it condensed the code so idk why we can’t just stick to props? I’m having trouble grasping how useful it can be or maybe in what scenarios I would use it outside of making a User.
