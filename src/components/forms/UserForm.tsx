@@ -1,20 +1,35 @@
-import { FormEvent, useEffect, useRef } from 'react'
+import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 
-import { UserDetailsType } from '../../types'
-import { useNavigate } from 'react-router-dom'
+import { UserDetailsType, UserProfileDetailsType } from '../../types'
+import { Link, useNavigate } from 'react-router-dom'
+import { apiRoot } from '../../app.config'
+import { Toast } from '../Toast'
+import { UserContext } from '../../contexts/UserProvider'
+import InputComponent from '../InputComponent'
+import { Spinner } from 'react-bootstrap'
 
 export default function UserForm({ edit }: { edit: boolean }) {
 
   const navigate = useNavigate()
   const usernameField = useRef<HTMLInputElement>(null)
-  const passwordField = useRef<HTMLInputElement>(null)
   const emailField = useRef<HTMLInputElement>(null)
+  const passwordField = useRef<HTMLInputElement>(null)
+  // const newPasswordField = useRef<HTMLInputElement>(null)
+  const phoneNumberField = useRef<HTMLInputElement>(null)
   const fNameField = useRef<HTMLInputElement>(null)
   const lNameField = useRef<HTMLInputElement>(null)
+  const { user } = useContext(UserContext)
+  const [pageLoading, setPageLoading] = useState(false)
+  const [userProfileDetails, setUserProfileDetails] = useState<UserProfileDetailsType>({} as UserProfileDetailsType)
+  console.log("🚀 ~ file: UserForm.tsx:22 ~ UserForm ~ userProfileDetails:", usernameField?.current?.value)
 
   useEffect(() => {
-    if (!edit && localStorage.getItem('token')) {
-      navigate('/')
+
+    if (edit) {
+      if (!user.token) {
+        return navigate('/')
+      }
+      getUserByID()
     }
   }, [])
 
@@ -22,73 +37,146 @@ export default function UserForm({ edit }: { edit: boolean }) {
   async function handleRegisterData(e: FormEvent<HTMLElement>) {
     e.preventDefault()
 
-    const user: UserDetailsType = {
+    const formUserDetails: UserDetailsType = {
       username: usernameField.current!.value,
+      
       password: passwordField.current!.value,
       email: emailField.current!.value,
+      phone_number: phoneNumberField.current!.value,
     }
     if (fNameField.current!.value) {
-      user.first_name = fNameField.current?.value
+      formUserDetails.first_name = fNameField.current?.value
     }
     if (lNameField.current!.value) {
-      user.last_name = lNameField.current?.value
+      formUserDetails.last_name = lNameField.current?.value
     }
-    clearFormData()
-    await registerUser(user)
+    // if (edit) {
+    //   formUserDetails.new_password = newPasswordField.current?.value
+    // }
+    await registerUser(formUserDetails)
   }
 
-  async function registerUser(user: UserDetailsType) {
-    const endpoint = edit ? 'user' : 'register'
-    const res = await fetch(`http://127.0.0.1:5000/${endpoint}`, {
+  async function getUserByID() {
+    setPageLoading(true);
+    const res = await fetch(`${apiRoot}/passenger/72`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user.token!}`
+      },
+      // body: JSON.stringify(formUserDetails)
+    })
+
+    const data = await res.json()
+    setUserProfileDetails(data)
+    setPageLoading(false)
+    if (res.status === 401) {
+      // 401 Unauthorized
+      navigate('/logout')
+    }
+  }
+
+  async function registerUser(formUserDetails: UserDetailsType) {
+    const endpoint = edit ? 'passenger' : 'passengerregister'
+    setPageLoading(true);
+    const res = await fetch(`${apiRoot}/${endpoint}`, {
       method: edit ? 'PUT' : 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')!}`
+        Authorization: `Bearer ${user.token!}`
       },
-      body: JSON.stringify(user)
+      body: JSON.stringify(formUserDetails)
     })
+    setPageLoading(false);
     const data = await res.json()
     console.log(data)
-    if (!res.ok) {
-      window.alert('Register Failed')
-    } else navigate('/login')
+    if (res.ok) {
+      if (edit) {
+        Toast('success', 'Editing was done successfully.')
+      } else {
+        Toast('success', 'Registration was done successfully.')
+      }
+      navigate('/login')
+    } else if (res.status === 401) {
+      // 401 Unauthorized
+      navigate('/logout')
+    } else {
+      clearFormData()
+      Toast('error', 'An error occurred, please try again.')
+    }
   }
 
   function clearFormData() {
     usernameField.current!.value = ''
     emailField.current!.value = ''
     passwordField.current!.value = ''
+    phoneNumberField.current!.value = ''
     fNameField.current!.value = ''
     lNameField.current!.value = ''
   }
 
   return (
-    <div>
+    <>
       <form className="row g-3" onSubmit={handleRegisterData}>
-        <div className="col-md-4">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input type="email" className="form-control" name='email' id="email" defaultValue="Otto" ref={usernameField} required />
-        </div>
-        <div className="col-md-4">
-          <label htmlFor="username" className="form-label">Username</label>
-          <input type="text" className="form-control" name='username' id="username" defaultValue="Otto" ref={emailField} required />
-        </div>
-        <div className="col-md-4">
-          <label htmlFor="first-name" className="form-label">First name</label>
-          <input type="text" className="form-control" name='first-name' id="first-name" defaultValue="Mark" ref={fNameField} />
-        </div>
-        <div className="col-md-4">
-          <label htmlFor="last-name" className="form-label">Last name</label>
-          <input type="text" className="form-control" name='last-name' id="last-name" defaultValue="Otto" ref={lNameField} />
-        </div>
-        <div className="col-md-4">
-          <label htmlFor="password" className="form-label">Password</label>
-          <input type="password" className="form-control" name='password' id="password" defaultValue="Otto" ref={passwordField} required />
-        </div>
+        {
+          (!edit || userProfileDetails.id) ? (
+            <>
+              <div className="col-md-4">
+                <InputComponent name='email' type='email' {...(edit && { defaultValue: userProfileDetails.email || '' })} ref={emailField} required />
+              </div>
+              <div className="col-md-4">
+                <InputComponent name='username' type='text' {...(edit && { defaultValue: userProfileDetails.username || '' })} ref={usernameField} required />
+              </div>
+              <div className="col-md-4">
+                <InputComponent name='phone_number' type='text' {...(edit && { defaultValue: userProfileDetails.phone_number || '' })} ref={phoneNumberField} required />
+              </div>
+              <div className="col-md-4">
+                <InputComponent name='first_name' type='text' {...(edit && { defaultValue: userProfileDetails.first_name || '' })} ref={fNameField} />
+              </div>
+              <div className="col-md-4">
+                <InputComponent name='last_name' type='text' {...(edit && { defaultValue: userProfileDetails.last_name || '' })} ref={lNameField} />
+              </div>
+              {
+                !edit && (
+                  <div className="col-md-4">
+                    <InputComponent name='password' type='password' ref={passwordField} required />
+                  </div>
+                )
+              }
 
-        <div className="col-12">
-          <input className="btn btn-primary" type="submit" value={edit ? 'Edit' : 'Register'} />
-        </div>
+              {/* {
+                edit && (
+                  <div className="col-md-4">
+                    <InputComponent name='new_password' type='password' ref={newPasswordField} required />
+                  </div>
+                )
+              } */}
+
+
+              <div className="col-12">
+                <button className="btn btn-primary" type="submit" {...(pageLoading && { disabled: true })}>
+                  {
+                    pageLoading ? (
+                      <div>
+                        <span className="spinner-border spinner-border-sm me-1" aria-hidden="true" />
+                        <span role="status">Loading...</span>
+                      </div>
+
+                    ) : edit ? 'Edit' : 'Register'
+                  }
+                </button>
+              </div>
+            </>
+          ) : (
+            <Spinner className='mx-auto mt-5' />
+          )
+        }
+
+        {
+          !edit && (
+            <p>You've Registered Before? <Link to='/login' className="text-primary" >Login!</Link></p>
+          )
+        }
       </form>
 
       {/* <form onSubmit={handleRegisterData}>
@@ -96,14 +184,14 @@ export default function UserForm({ edit }: { edit: boolean }) {
         <input type="text" name='username' ref={usernameField} required /><br />
         <label htmlFor="email">Email</label><br />
         <input type="text" name='email' ref={emailField} required /><br />
-        <label htmlFor="first-name">First Name</label><br />
-        <input type="text" name='first-name' ref={fNameField} /><br />
-        <label htmlFor="last-name">LastName</label><br />
-        <input type="text" name='last-name' ref={lNameField} /><br />
+        <label htmlFor="first_name">First Name</label><br />
+        <input type="text" name='first_name' ref={fNameField} /><br />
+        <label htmlFor="last_name">LastName</label><br />
+        <input type="text" name='last_name' ref={lNameField} /><br />
         <label htmlFor="password">Password</label><br />
         <input type="password" name='password' ref={passwordField} required /><br />
         <input type="submit" value={edit ? 'Edit' : 'Register'} />
       </form> */}
-    </div>
+    </>
   );
 }
