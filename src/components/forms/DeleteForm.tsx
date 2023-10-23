@@ -1,61 +1,89 @@
-import { FormEvent, useRef } from 'react'
+import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
+import { apiRoot } from '../../app.config'
+import InputComponent from '../InputComponent'
+import { Toast } from '../Toast'
+import { UserContext } from '../../contexts/UserProvider'
 
 export default function DeleteForm() {
-  const navigate = useNavigate()
 
+  useEffect(() => {
+    if (!user.token) {
+      navigate('/')
+    }
+  }, [])
+
+
+  const navigate = useNavigate()
+  const [pageLoading, setPageLoading] = useState(false)
   const usernameField = useRef<HTMLInputElement>(null)
   const passwordField = useRef<HTMLInputElement>(null)
+  const { user } = useContext(UserContext)
 
   async function handleDeleteData(e: FormEvent<HTMLElement>) {
     e.preventDefault()
-    console.log('IN DELETE FUNC')
-    const res = await fetch('http://127.0.0.1:5000/user', {
+    setPageLoading(true)
+    const res = await fetch(`${apiRoot}/passenger`, {
       method: "DELETE",
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')!}`
+        Authorization: `Bearer ${user.token!}`
       },
       body: JSON.stringify({
         username: usernameField.current!.value,
         password: passwordField.current!.value
       })
     })
+    setPageLoading(false)
     if (res.ok) {
       console.log('good response')
+      Toast('success', 'Deleting was done successfully.')
       const data = await res.json()
       console.log(data)
       navigate('/logout')
-    } else window.alert('Delete Failed')
-    console.log('bad response')
+    } else if (res.status === 401) {
+      // 401 Unauthorized
+      navigate('/logout')
+    } else {
+      Toast('error', 'An error occurred, please try again.')
+      console.log('bad response')
+    }
   }
 
   return (
     <>
       <form className="row g-3" onSubmit={handleDeleteData}>
-      <div className="col-md-4">
-          <label htmlFor="username" className="form-label">Username</label>
-          <input type="text" className="form-control" name='username' id="username" ref={usernameField} required />
+        <div className="col-md-4">
+          <InputComponent name='username' type='text' ref={usernameField} required />
         </div>
         <div className="col-md-4">
-          <label htmlFor="password" className="form-label">Password</label>
-          <input type="password" className="form-control" name='password' id="password" ref={passwordField} required />
+          <InputComponent name='password' type='password' ref={passwordField} required />
         </div>
 
         <div className="col-12">
-          <input className="btn btn-primary" type="submit" value='Delete' />
+          <button className="btn btn-primary" type="submit" {...(pageLoading && { disabled: true })}>
+            {
+              pageLoading ? (
+                <div>
+                  <span className="spinner-border spinner-border-sm me-1" aria-hidden="true" />
+                  <span role="status">Loading...</span>
+                </div>
+
+              ) : 'Delete'
+            }
+          </button>
         </div>
       </form>
 
 
-      <form onSubmit={handleDeleteData}>
+      {/* <form onSubmit={handleDeleteData}>
         <label htmlFor="username">Username</label><br />
         <input type="text" name='username' ref={usernameField} required /><br />
         <label htmlFor="password">Password</label><br />
         <input type="password" name='password' ref={passwordField} required /><br />
         <input type="submit" value='Delete' />
-      </form>
+      </form> */}
     </>
   )
 }
