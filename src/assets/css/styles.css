@@ -74,6 +74,11 @@ body{
 }
 
 
+.navbar-brand{
+	margin-left: 0.5rem;
+}
+
+
 .navbar-nav li{
 	padding-right: 0.7rem;
 }
@@ -114,7 +119,7 @@ body{
 }
 
 
-.caption > h3 , .caption > h1 {
+.caption > h3 , .caption > h1, .caption > a {
 	text-transform: uppercase;
 }
 
