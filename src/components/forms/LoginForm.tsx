@@ -1,20 +1,23 @@
-import { FormEvent, useContext, useEffect, useRef } from 'react'
+import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 
 import { UserContext } from '../../contexts/UserProvider'
 import { UserDetailsType } from '../../types'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { apiRoot } from '../../app.config'
+import { Toast } from '../Toast'
+import InputComponent from '../InputComponent'
 
 export default function LoginForm() {
   const navigate = useNavigate()
   const { setUser, user } = useContext(UserContext)
-  console.log("🚀 ~ file: LoginForm.tsx:10 ~ LoginForm ~ user:", user)
 
   const usernameField = useRef<HTMLInputElement>(null)
   const emailField = useRef<HTMLInputElement>(null)
   const passwordField = useRef<HTMLInputElement>(null)
+  const [pageLoading, setPageLoading] = useState(false)
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
+    if (user.token) {
       navigate('/')
     }
   }, [])
@@ -29,32 +32,40 @@ export default function LoginForm() {
     } else if (emailField.current?.value) {
       loginInfo.email = emailField.current.value
     } else {
-      window.alert('Please include Username or Email')
+      Toast('error', `Please include Username or Email'}`)
       return
     }
-    clearForm()
     loginUser(loginInfo)
-    navigate('/')
   }
 
   async function loginUser(loginInfo: Partial<UserDetailsType>) {
-    const res = await fetch('http://127.0.0.1:5000/login', {
+    setPageLoading(true);
+    const res = await fetch(`${apiRoot}/passengerlogin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginInfo)
     })
+    setPageLoading(false);
     if (res.ok) {
       const data = await res.json()
+      console.log("🚀 ~ file: LoginForm.tsx:51 ~ loginUser ~ res:", res)
       const accessToken = data.access_token
       setUser({
         token: accessToken,
         username: loginInfo.username ? loginInfo.username : ''
       })
-      localStorage.setItem('token', accessToken)
-    } else window.alert('Failed Login')
+      Toast('success', `Welcome ${loginInfo.username}`)
+      navigate('/')
+    } else if (res.status === 401) {
+      // 401 Unauthorized
+      navigate('/logout')
+    } else {
+      Toast('error', 'An error occurred, please try again.')
+      clearFormData()
+    }
   }
 
-  function clearForm() {
+  function clearFormData() {
     usernameField.current!.value = ''
     emailField.current!.value = ''
     passwordField.current!.value = ''
@@ -64,24 +75,32 @@ export default function LoginForm() {
     <>
       <form className="row g-3" onSubmit={handleLoginData}>
         <div className="col-md-4">
-          <label htmlFor="username" className="form-label">Username</label>
-          <input type="text" className="form-control" name='username' id="username" ref={usernameField} />
+          <InputComponent name='username' type='text' ref={usernameField} />
         </div>
         <div className="col-md-4">
-          <label htmlFor="email" className="form-label">Email</label>
-          <input type="email" className="form-control" name='email' id="email" ref={emailField} />
+          <InputComponent name='email' type='email' ref={emailField} />
         </div>
         <div className="col-md-4">
-          <label htmlFor="password" className="form-label">Password</label>
-          <input type="password" className="form-control" name='password' id="password" ref={passwordField} required />
+          <InputComponent name='password' type='password' ref={passwordField} required />
         </div>
 
         <div className="col-12">
-          <input className="btn btn-primary" type="submit" value='Login' />
+          <button className="btn btn-primary" type="submit" {...(pageLoading && { disabled: true })}>
+            {
+              pageLoading ? (
+                <div>
+                  <span className="spinner-border spinner-border-sm me-1" aria-hidden="true" />
+                  <span role="status">Loading...</span>
+                </div>
+
+              ) : 'Login'
+            }
+          </button>
         </div>
       </form>
+      <p>You've not Registered? <Link to='/register' className="text-primary" >Register!</Link></p>
 
-    {/* <button type='button' onClick={() => setUser({token: "login", username: "login"})}>setUser</button> */}
+      {/* <button type='button' onClick={() => setUser({token: "login", username: "login"})}>setUser</button> */}
 
 
 
