@@ -24,11 +24,9 @@ export default function MatrixPage() {
 
   return (
     <Body sidebar>
-<div className="card shadow col-lg-9 col-md-10 col-sm-11 mx-auto">
         <Instructors />
         <Students studentArray={students} />
         <Whiteboard students={students} />
-</div>
     </Body>
   )
 }
