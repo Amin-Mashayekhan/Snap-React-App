@@ -4,17 +4,26 @@ export type LoggedUserDetailsType = {
 }
 
 export type UserDetailsType = {
-  readonly id?: string
+  readonly id?: string 
   username: string
-  password: string
   email: string
+  password: string
+  // new_password?: string
+  phone_number: string
   first_name?: string
   last_name?: string
 }
 
-export type Post = {
-  id: string
-  timestamp: Date
-  user_id: number
-  body: string
+export type UserProfileDetailsType = UserDetailsType & {
+  requests: PostDetailsType[]
+}
+
+export type PostDetailsType = {
+  "id": string
+  "pickup": string
+  "dropoff": string
+  "number_of_passengers": string
+  "number_of_luggages": string
+  "passenger_id": number
+  "date_time": string
 }
