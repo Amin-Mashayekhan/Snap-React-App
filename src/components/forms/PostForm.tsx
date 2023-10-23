@@ -1,12 +1,16 @@
 import { FormEvent, useRef } from "react"
+import { apiRoot } from "../../app.config"
+import { useNavigate } from "react-router-dom"
+import { Toast } from "../Toast";
 
 export default function PostForm() {
 
   const postField = useRef<HTMLTextAreaElement>(null)
+  const navigate = useNavigate();
 
   async function makePost(e: FormEvent<HTMLElement>) {
     e.preventDefault()
-    const res = await fetch('http://127.0.0.1:5000/post/', {
+    const res = await fetch(`${apiRoot}/post/`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -18,8 +22,12 @@ export default function PostForm() {
     })
     if (res.ok) {
       const data = res.json()
+      Toast('success', 'Addition was done successfully.')
       console.log(data)
-    } else console.log('bad request')
+    } else if (res.status === 401) {
+      // 401 Unauthorized
+      navigate('/logout')
+    } else Toast('error', 'An error occurred, please try again.')
   }
 
   return (
