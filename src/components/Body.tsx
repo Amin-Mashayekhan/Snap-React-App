@@ -4,8 +4,8 @@ import Sidebar from './Sidebar'
 // import Stack from 'react-bootstrap/esm/Stack'
 
 interface BodyProps {
-  sidebar: boolean
-  children: JSX.Element[] | JSX.Element
+  sidebar?: boolean
+  children?: JSX.Element[] | JSX.Element
 }
 
 export default function Body({ sidebar, children }: BodyProps) {
@@ -24,15 +24,19 @@ export default function Body({ sidebar, children }: BodyProps) {
         </div>
         <div className="caption text-center">
           {
-            !children && (
+            children ? (
+              <div className="card shadow col-lg-9 col-md-10 col-sm-11 mx-auto">
+                {children}
+              </div>
+            ) : (
               <>
                 <h1>Welcome to Snap</h1>
-                <h3>User</h3>
-                <Link className="btn btn-outline-light btn-lg rounded-1 " to='/login'>signing</Link>
+                {/* <h3>User</h3> */}
+                <Link className="btn btn-outline-light btn-lg rounded-1 " to='/login'>Signing</Link>
               </>
             )
           }
-          {children}
+
         </div>
       </div>   {/* End Landing Page Section */}
 
