@@ -1,14 +1,19 @@
 import { useEffect, useState } from "react"
-import { Post } from "../types";
-import { Container, Spinner } from "react-bootstrap";
+import { PostDetailsType } from "../types";
+import {  Spinner } from "react-bootstrap";
+import Body from "./Body";
+import { apiRoot } from "../app.config";
+import { useNavigate } from "react-router-dom";
 
 export default function Posts( { username } : { username: string | boolean }) {
 
-  const [posts, setPosts] = useState<Array<Post>>([])
+  const [posts, setPosts] = useState<Array<PostDetailsType>>([] as Array<PostDetailsType>)
+
   useEffect(()=>{
     console.log('in effect');
     getPosts()
   },[])
+  const navigate = useNavigate()
 
   async function getPosts(){
     const endpoint = username ? `user/${username}` : 'post/'
@@ -19,18 +24,21 @@ export default function Posts( { username } : { username: string | boolean }) {
       if(res.ok){
         const postsData = await res.json()
         setPosts(username? postsData.posts : postsData)
+      } else if (res.status === 401) {
+        // 401 Unauthorized
+        navigate('/logout')
       } else console.log('bad request')
   }
 
 
   return (
-    <Container>
+    <Body sidebar>
       
       { posts.length > 0 ?
-        posts.map((post:Post, i:number) => <p key={i}>{post.body}</p>) :
-        <Spinner />
+        posts.map((post:PostDetailsType, i:number) => <p key={i}>{post.pickup}</p>) :
+        <Spinner className="mx-auto" />
         }
       
-    </Container>
+    </Body>
   )
 }
