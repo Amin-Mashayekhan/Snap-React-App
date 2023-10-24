@@ -35,7 +35,7 @@ export default function Sidebar() {
                   <Link to={`/user/${user.username}`} className="nav-link" >My Page</Link>
                 </li>
                 <li className="nav-item">
-                  <Link to='/users' className="nav-link" >All Users</Link>
+                  <Link to='/users' className="nav-link" >Other Passengers</Link>
                 </li>
                 {/* <li className="nav-item">
                   <Link to='/feed' className="nav-link" >Posts</Link>
