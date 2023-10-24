@@ -1,48 +1,56 @@
 import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
-
-import { UserDetailsType, UserProfileDetailsType } from '../../types'
 import { Link, useNavigate } from 'react-router-dom'
-import { apiRoot } from '../../app.config'
-import { Toast } from '../Toast'
-import { UserContext } from '../../contexts/UserProvider'
+import { UserDetailsType, UserProfileDetailsType } from '../../types'
+
 import InputComponent from '../InputComponent'
 import { Spinner } from 'react-bootstrap'
+import { Toast } from '../Toast'
+import { UserContext } from '../../contexts/UserProvider'
+import { apiRoot } from '../../app.config'
 
-export default function UserForm({ edit }: { edit: boolean }) {
+type userFormProps = {
+  edit: false;
+} | {
+  edit: true;
+  userProfileDetails: UserProfileDetailsType;
+}
+
+
+export default function UserForm(props: userFormProps) {
 
   const navigate = useNavigate()
   const usernameField = useRef<HTMLInputElement>(null)
   const emailField = useRef<HTMLInputElement>(null)
   const passwordField = useRef<HTMLInputElement>(null)
-  // const newPasswordField = useRef<HTMLInputElement>(null)
+  const newPasswordField = useRef<HTMLInputElement>(null)
   const phoneNumberField = useRef<HTMLInputElement>(null)
   const fNameField = useRef<HTMLInputElement>(null)
   const lNameField = useRef<HTMLInputElement>(null)
   const { user } = useContext(UserContext)
   const [pageLoading, setPageLoading] = useState(false)
-  const [userProfileDetails, setUserProfileDetails] = useState<UserProfileDetailsType>({} as UserProfileDetailsType)
-  console.log("🚀 ~ file: UserForm.tsx:22 ~ UserForm ~ userProfileDetails:", usernameField?.current?.value)
 
   useEffect(() => {
 
-    if (edit) {
+    if (props.edit) {
       if (!user.token) {
         return navigate('/')
       }
-      getUserByID()
     }
   }, [])
 
 
   async function handleRegisterData(e: FormEvent<HTMLElement>) {
     e.preventDefault()
+    console.log("🚀 ~ file: UserForm.tsx:44 ~ handleRegisterData ~ e:", e)
 
     const formUserDetails: UserDetailsType = {
       username: usernameField.current!.value,
-      
       password: passwordField.current!.value,
       email: emailField.current!.value,
       phone_number: phoneNumberField.current!.value,
+    }
+    if (!props.edit) {
+      formUserDetails.password = passwordField.current!.value
     }
     if (fNameField.current!.value) {
       formUserDetails.first_name = fNameField.current?.value
@@ -50,37 +58,18 @@ export default function UserForm({ edit }: { edit: boolean }) {
     if (lNameField.current!.value) {
       formUserDetails.last_name = lNameField.current?.value
     }
-    // if (edit) {
-    //   formUserDetails.new_password = newPasswordField.current?.value
-    // }
+    if (props.edit) {
+      formUserDetails.new_password = newPasswordField.current?.value
+    }
     await registerUser(formUserDetails)
   }
 
-  async function getUserByID() {
-    setPageLoading(true);
-    const res = await fetch(`${apiRoot}/passenger/72`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.token!}`
-      },
-      // body: JSON.stringify(formUserDetails)
-    })
-
-    const data = await res.json()
-    setUserProfileDetails(data)
-    setPageLoading(false)
-    if (res.status === 401) {
-      // 401 Unauthorized
-      navigate('/logout')
-    }
-  }
 
   async function registerUser(formUserDetails: UserDetailsType) {
-    const endpoint = edit ? 'passenger' : 'passengerregister'
+    const endpoint = props.edit ? 'passenger' : 'passengerregister'
     setPageLoading(true);
     const res = await fetch(`${apiRoot}/${endpoint}`, {
-      method: edit ? 'PUT' : 'POST',
+      method: props.edit ? 'PUT' : 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${user.token!}`
@@ -91,66 +80,64 @@ export default function UserForm({ edit }: { edit: boolean }) {
     const data = await res.json()
     console.log(data)
     if (res.ok) {
-      if (edit) {
+      if (props.edit) {
         Toast('success', 'Editing was done successfully.')
       } else {
         Toast('success', 'Registration was done successfully.')
+        navigate('/login')
       }
-      navigate('/login')
     } else if (res.status === 401) {
       // 401 Unauthorized
+      Toast('error', 'For the security of your account, please login again.')
       navigate('/logout')
     } else {
-      clearFormData()
+      // clearFormData()
       Toast('error', 'An error occurred, please try again.')
+
     }
   }
 
-  function clearFormData() {
-    usernameField.current!.value = ''
-    emailField.current!.value = ''
-    passwordField.current!.value = ''
-    phoneNumberField.current!.value = ''
-    fNameField.current!.value = ''
-    lNameField.current!.value = ''
-  }
+  // function clearFormData() {
+  //   usernameField.current!.value = ''
+  //   emailField.current!.value = ''
+  //   passwordField.current!.value = ''
+  //   phoneNumberField.current!.value = ''
+  //   fNameField.current!.value = ''
+  //   lNameField.current!.value = ''
+  // }
 
   return (
     <>
       <form className="row g-3" onSubmit={handleRegisterData}>
         {
-          (!edit || userProfileDetails.id) ? (
+          (!props.edit || props.userProfileDetails.id) ? (
             <>
               <div className="col-md-4">
-                <InputComponent name='email' type='email' {...(edit && { defaultValue: userProfileDetails.email || '' })} ref={emailField} required />
+                <InputComponent name='email' type='email' {...(props.edit && { defaultValue: props.userProfileDetails.email || '' })} ref={emailField} required />
               </div>
               <div className="col-md-4">
-                <InputComponent name='username' type='text' {...(edit && { defaultValue: userProfileDetails.username || '' })} ref={usernameField} required />
+                <InputComponent name='username' type='text' {...(props.edit && { defaultValue: props.userProfileDetails.username || '' })} ref={usernameField} required />
               </div>
               <div className="col-md-4">
-                <InputComponent name='phone_number' type='text' {...(edit && { defaultValue: userProfileDetails.phone_number || '' })} ref={phoneNumberField} required />
+                <InputComponent name='phone_number' type='text' {...(props.edit && { defaultValue: props.userProfileDetails.phone_number || '' })} ref={phoneNumberField} required />
               </div>
               <div className="col-md-4">
-                <InputComponent name='first_name' type='text' {...(edit && { defaultValue: userProfileDetails.first_name || '' })} ref={fNameField} />
+                <InputComponent name='first_name' type='text' {...(props.edit && { defaultValue: props.userProfileDetails.first_name || '' })} ref={fNameField} />
               </div>
               <div className="col-md-4">
-                <InputComponent name='last_name' type='text' {...(edit && { defaultValue: userProfileDetails.last_name || '' })} ref={lNameField} />
+                <InputComponent name='last_name' type='text' {...(props.edit && { defaultValue: props.userProfileDetails.last_name || '' })} ref={lNameField} />
               </div>
+              <div className="col-md-4">
+                <InputComponent name='password' type='password' ref={passwordField} {...( !props.edit && {required: true})} />
+              </div>
+
               {
-                !edit && (
+                props.edit && (
                   <div className="col-md-4">
-                    <InputComponent name='password' type='password' ref={passwordField} required />
+                    <InputComponent name='new_password' type='password' ref={newPasswordField} />
                   </div>
                 )
               }
-
-              {/* {
-                edit && (
-                  <div className="col-md-4">
-                    <InputComponent name='new_password' type='password' ref={newPasswordField} required />
-                  </div>
-                )
-              } */}
 
 
               <div className="col-12">
@@ -162,7 +149,7 @@ export default function UserForm({ edit }: { edit: boolean }) {
                         <span role="status">Loading...</span>
                       </div>
 
-                    ) : edit ? 'Edit' : 'Register'
+                    ) : props.edit ? 'Edit' : 'Register'
                   }
                 </button>
               </div>
@@ -173,7 +160,7 @@ export default function UserForm({ edit }: { edit: boolean }) {
         }
 
         {
-          !edit && (
+          !props.edit && (
             <p>You've Registered Before? <Link to='/login' className="text-primary" >Login!</Link></p>
           )
         }
@@ -190,7 +177,7 @@ export default function UserForm({ edit }: { edit: boolean }) {
         <input type="text" name='last_name' ref={lNameField} /><br />
         <label htmlFor="password">Password</label><br />
         <input type="password" name='password' ref={passwordField} required /><br />
-        <input type="submit" value={edit ? 'Edit' : 'Register'} />
+        <input type="submit" value={props.edit ? 'Edit' : 'Register'} />
       </form> */}
     </>
   );
