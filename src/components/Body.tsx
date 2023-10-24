@@ -1,6 +1,10 @@
 // import Container from 'react-bootstrap/esm/Container'
+
 import { Link } from 'react-router-dom'
 import Sidebar from './Sidebar'
+import { UserContext } from '../contexts/UserProvider'
+import { useContext } from 'react'
+
 // import Stack from 'react-bootstrap/esm/Stack'
 
 interface BodyProps {
@@ -9,6 +13,8 @@ interface BodyProps {
 }
 
 export default function Body({ sidebar, children }: BodyProps) {
+  const { user } = useContext(UserContext)
+
   return (
     <>
       {/* Start Home Section */}
@@ -31,8 +37,14 @@ export default function Body({ sidebar, children }: BodyProps) {
             ) : (
               <>
                 <h1>Welcome to Snap</h1>
-                {/* <h3>User</h3> */}
-                <Link className="btn btn-outline-light btn-lg rounded-1 " to='/login'>Signing</Link>
+                <h3 className='text-capitalize'>{user.username}</h3>
+                {
+                  !user.token ? (
+                    <Link className="btn btn-outline-light btn-lg rounded-1 " to='/login'>Signing</Link>
+                  ) : (
+                    <Link className="btn btn-outline-light btn-lg rounded-1 " to='/logout'>Logout</Link>
+                  )
+                }
               </>
             )
           }
