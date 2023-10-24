@@ -5,7 +5,6 @@ import Country from './pages/Country';
 import DeleteForm from './components/forms/DeleteForm';
 import LoginForm from './components/forms/LoginForm';
 import Logout from './components/Logout';
-import MatrixPage from './pages/MatrixPage';
 import { UserContext } from './contexts/UserProvider';
 import UserForm from './components/forms/UserForm';
 import UserPage from './pages/UserPage';
