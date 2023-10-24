@@ -64,12 +64,13 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
         setTripList((prevState) => {
           return prevState.map((trip) => {
             if (trip.id === editMode.requestID) {
-              return { id: editMode.requestID, passenger_id: '00', ...formUserDetails }
+              return data 
             }
             return trip
           })
         })
         Toast('success', 'Editing was done successfully.')
+        handleEditClick(data)
       } else {
         Toast('success', 'Registration was done successfully.')
       }
@@ -134,7 +135,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">
-              <h1 className="modal-title fs-5" id="exampleModalLabel">New Trip</h1>
+              <h1 className="modal-title fs-5" id="exampleModalLabel">{`${editMode.isEditMode ? 'Edit' : 'New'} Trip`}</h1>
               <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close" />
             </div>
             <div className="modal-body">
@@ -157,7 +158,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
                         <InputComponent name='number_of_luggages' type='text' ref={numberOfLuggagesField} required />
                       </div>
                       <div className="col-md-4">
-                        <InputComponent name='date_time' type='date' ref={dateTimeField} required />
+                        <InputComponent name='date_time' id="datePicker" type='text'  ref={dateTimeField} defaultValue="2012-3-23" required />
                       </div>
                     </>
 
@@ -212,7 +213,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
                   <td>{trip.number_of_luggages}</td>
                   <td>{trip.date_time}</td>
                   <td>
-                    <button type="button" className="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo" onClick={() => handleEditClick(trip)}>Edit</button>
+                    <button type="button" className="btn btn-success me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo" onClick={() => handleEditClick(trip)}>Edit</button>
                     <button type="button" className="btn btn-danger" onClick={() => handleDeleteData(trip)}>Delete</button>
                   </td>
                 </tr>
