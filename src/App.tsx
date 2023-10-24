@@ -7,11 +7,10 @@ import LoginForm from './components/forms/LoginForm';
 import Logout from './components/Logout';
 import MatrixPage from './pages/MatrixPage';
 // import PostForm from './components/forms/PostForm';
-import Posts from './components/Posts';
 // import { UserContext } from './contexts/UserProvider';
 import UserForm from './components/forms/UserForm';
 import UserPage from './pages/UserPage';
-import Users from './components/Users';
+import Users from './pages/Users';
 import { useContext } from 'react';
 import { UserContext } from './contexts/UserProvider';
 import Body from './components/Body';
@@ -71,11 +70,6 @@ function App(): JSX.Element {
               <Route path='/user/:username' element={
                 <Body sidebar>
                   <UserPage />
-                </Body>
-              } />
-              <Route path='/feed' element={
-                <Body sidebar>
-                  <Posts username={false} />
                 </Body>
               } />
               <Route path='/country' element={
