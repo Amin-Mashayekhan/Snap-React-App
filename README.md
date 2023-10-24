@@ -13,8 +13,13 @@
 ## datasql
 ### https://www.elephantsql.com/
 
+## Deployed on:
+### https://snap-react-app-amin-mashayekhan.vercel.app/
+
 #### miladjangjooo@gmail.com
 #### pass: AminMilad
+
+
 
 
 When do you know to use useEffect? I don’t understand why we use that vs. making a different function with if/else statements.
