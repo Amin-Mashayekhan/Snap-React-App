@@ -191,6 +191,14 @@ body{
 
 }
 
+
+@media (max-width: 576px) {
+
+	.caption {
+		top: 15%
+	}
+}
+
 /*============ BOOTSTRAP BREAK POINTS:
 
 Extra small (xs) devices (portrait phones, less than 576px)
