@@ -22,7 +22,7 @@ export default function UserPage() {
   }, [])
 
   async function getUserByID() {
-    const res = await fetch(`${apiRoot}/passenger/72`, {
+    const res = await fetch(`${apiRoot}/passenger/80`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
