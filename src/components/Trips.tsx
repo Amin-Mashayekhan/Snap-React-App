@@ -1,5 +1,5 @@
 import { EditModeDetailsType, TripDetailsFormType, TripDetailsType } from "../types";
-import { FormEvent, useContext, useRef, useState } from "react";
+import { FormEvent, useContext, useEffect, useRef, useState } from "react";
 
 import InputComponent from "./InputComponent";
 import { Spinner } from "react-bootstrap";
@@ -10,31 +10,41 @@ import { useNavigate } from "react-router-dom";
 
 export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
   const [pageLoading, setPageLoading] = useState(false)
-  const [editMode, setEditMode] = useState<EditModeDetailsType>({isEditMode: false} as EditModeDetailsType)
+  const [editMode, setEditMode] = useState<EditModeDetailsType>({ isEditMode: false } as EditModeDetailsType)
+  const [tripList, setTripList] = useState<TripDetailsType[]>([] as TripDetailsType[])
   const pickupField = useRef<HTMLInputElement>(null)
   const dropoffField = useRef<HTMLInputElement>(null)
-  const numberOfPassengers = useRef<HTMLInputElement>(null)
-  const numberOfLuggages = useRef<HTMLInputElement>(null)
-  const dateTime = useRef<HTMLInputElement>(null)
+  const numberOfPassengersField = useRef<HTMLInputElement>(null)
+  const numberOfLuggagesField = useRef<HTMLInputElement>(null)
+  const dateTimeField = useRef<HTMLInputElement>(null)
   const { user } = useContext(UserContext)
   const navigate = useNavigate();
 
-  
+
+  useEffect(() => {
+    if (userTrips[0]) {
+      setTripList(userTrips);
+    }
+  }, []);
+
+
+
+
   async function handleSubmitForm(e: FormEvent<HTMLElement>) {
     e.preventDefault()
 
     const formUserDetails: TripDetailsFormType = {
       pickup: pickupField.current!.value,
       dropoff: dropoffField.current!.value,
-      number_of_passengers: numberOfPassengers.current!.value,
-      number_of_luggages: numberOfLuggages.current!.value,
-      date_time: dateTime.current!.value,
+      number_of_passengers: numberOfPassengersField.current!.value,
+      number_of_luggages: numberOfLuggagesField.current!.value,
+      date_time: dateTimeField.current!.value,
     }
-    await registerUser(formUserDetails)
+    await registerUserTrip(formUserDetails)
   }
 
 
-  async function registerUser(formUserDetails: TripDetailsFormType) {
+  async function registerUserTrip(formUserDetails: TripDetailsFormType) {
     const endpoint = editMode.isEditMode ? `request/${editMode.requestID}` : 'request'
     setPageLoading(true);
     const res = await fetch(`${apiRoot}/${endpoint}`, {
@@ -50,6 +60,15 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
     console.log(data)
     if (res.ok) {
       if (editMode.isEditMode) {
+        // update edited trip in the rendered table
+        setTripList((prevState) => {
+          return prevState.map((trip) => {
+            if (trip.id === editMode.requestID) {
+              return { id: editMode.requestID, passenger_id: '00', ...formUserDetails }
+            }
+            return trip
+          })
+        })
         Toast('success', 'Editing was done successfully.')
       } else {
         Toast('success', 'Registration was done successfully.')
@@ -61,16 +80,54 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
     } else {
       // clearFormData()
       Toast('error', 'An error occurred, please try again.')
-
     }
   }
 
+
+  async function handleDeleteData(tripDetails: TripDetailsType) {
+    setPageLoading(true)
+    const { id, ...restOfData } = tripDetails
+    const res = await fetch(`${apiRoot}/request/${id}`, {
+      method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${user.token!}`
+      },
+      body: JSON.stringify(restOfData)
+    })
+    setPageLoading(false)
+    if (res.ok) {
+      Toast('success', 'Deleting was done successfully.')
+      const data = await res.json()
+      console.log(data)
+      setTripList((prevState) =>{
+        return prevState.filter((trip) => {
+          return trip.id !== tripDetails.id
+        })
+      })
+    } else if (res.status === 401) {
+      // 401 Unauthorized
+      Toast('error', 'For the security of your account, please login again.')
+      navigate('/logout')
+    } else {
+      Toast('error', 'An error occurred, please try again.')
+    }
+  }
+
+  const handleEditClick = (tripDetails: TripDetailsType) => {
+    setEditMode({ isEditMode: true, requestID: tripDetails.id })
+    pickupField.current!.value = tripDetails.pickup
+    dropoffField.current!.value = tripDetails.dropoff
+    numberOfPassengersField.current!.value = tripDetails.number_of_passengers
+    numberOfLuggagesField.current!.value = tripDetails.number_of_luggages
+    dateTimeField.current!.value = tripDetails.date_time
+  }
 
 
   return (
     <>
       <div className="d-flex mb-2">
-        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo">Add New Trip</button>
+        <button type="button" className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo" onClick={() => setEditMode({ isEditMode: false })}>Add New Trip</button>
       </div>
       {/* ------------------------------------------------------------------------------------------------------------------ */}
       <div className="modal modal-lg fade" id="exampleModal" tabIndex={-1} aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -94,13 +151,13 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
                         <InputComponent name='dropoff' type='text' ref={dropoffField} required />
                       </div>
                       <div className="col-md-4">
-                        <InputComponent name='number_of_passengers' type='text' ref={numberOfPassengers} required />
+                        <InputComponent name='number_of_passengers' type='text' ref={numberOfPassengersField} required />
                       </div>
                       <div className="col-md-4">
-                        <InputComponent name='number_of_luggages' type='text' ref={numberOfLuggages}  required />
+                        <InputComponent name='number_of_luggages' type='text' ref={numberOfLuggagesField} required />
                       </div>
                       <div className="col-md-4">
-                        <InputComponent name='date_time' type='date' ref={dateTime} required />
+                        <InputComponent name='date_time' type='date' ref={dateTimeField} required />
                       </div>
                     </>
 
@@ -140,11 +197,12 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
               <th>Number of Passengers</th>
               <th>Number of Luggages</th>
               <th>Date Time</th>
+              <th>Edit / Delete</th>
             </tr>
           </thead>
           <tbody>
             {
-              userTrips.length > 0 ? (userTrips.map((trip: TripDetailsType, i: number) => (
+              tripList.length > 0 ? (tripList.map((trip: TripDetailsType, i: number) => (
                 <tr>
                   <th>{i + 1}</th>
                   <td>{trip.id}</td>
@@ -153,11 +211,15 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
                   <td>{trip.number_of_passengers}</td>
                   <td>{trip.number_of_luggages}</td>
                   <td>{trip.date_time}</td>
+                  <td>
+                    <button type="button" className="btn btn-info me-2" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@mdo" onClick={() => handleEditClick(trip)}>Edit</button>
+                    <button type="button" className="btn btn-danger" onClick={() => handleDeleteData(trip)}>Delete</button>
+                  </td>
                 </tr>
               )
               )) : (
                 <tr>
-                  <th colSpan={7}>There is no trips yet.</th>
+                  <th colSpan={8}>There is no trips yet.</th>
                 </tr>
               )
             }
