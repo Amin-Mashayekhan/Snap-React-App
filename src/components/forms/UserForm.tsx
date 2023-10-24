@@ -41,7 +41,7 @@ export default function UserForm(props: userFormProps) {
 
   async function handleRegisterData(e: FormEvent<HTMLElement>) {
     e.preventDefault()
-    if (usernameField.current?.value && phoneNumberField.current?.value && emailField.current?.value) {
+    if (usernameField.current?.value && phoneNumberField.current?.value && emailField.current?.value && passwordField.current?.value) {
       const formUserDetails: UserDetailsType = {
         username: usernameField.current!.value,
         password: passwordField.current!.value,
@@ -130,7 +130,7 @@ export default function UserForm(props: userFormProps) {
                 <InputComponent name='last_name' type='text' {...(props.edit && { defaultValue: props.userProfileDetails.last_name || '' })} ref={lNameField} />
               </div>
               <div className="col-md-4">
-                <InputComponent name='password' type='password' ref={passwordField} {...(!props.edit && { required: true })} />
+                <InputComponent name='password' type='password' ref={passwordField}  required />
               </div>
 
               {
