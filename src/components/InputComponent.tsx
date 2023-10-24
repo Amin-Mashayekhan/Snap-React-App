@@ -1,8 +1,7 @@
-
 import React from 'react'
 
 interface inputProps {
-    type: "text" | "password" | "email" | "number";
+    type: "text" | "password" | "email" | "number" | "date";
     name: string;
     required?: boolean;
     placeholder?: string;
@@ -23,7 +22,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, inputProps>((props: in
 
     return (
         <React.Fragment>
-            <label htmlFor={name} className="form-label">
+            <label htmlFor={name} className="form-label text-capitalize">
                 {name}
                 {required && <span className="text-danger">*</span>}
             </label>
