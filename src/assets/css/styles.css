@@ -18,6 +18,10 @@ body{
   row-gap: 5px;
 }
 
+.col-12 {
+	margin-top: 0;
+}
+
 
 
 
