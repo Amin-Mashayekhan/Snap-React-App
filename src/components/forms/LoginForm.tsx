@@ -82,7 +82,7 @@ export default function LoginForm() {
           <InputComponent name='email' type='email' ref={emailField} />
         </div>
         <div className="col-md-4">
-          <InputComponent name='password' type='password' ref={passwordField} required />
+          <InputComponent name='password' type='password' ref={passwordField} />
         </div>
 
         <div className="col-12">
