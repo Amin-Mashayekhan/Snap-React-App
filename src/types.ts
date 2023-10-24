@@ -4,26 +4,60 @@ export type LoggedUserDetailsType = {
 }
 
 export type UserDetailsType = {
-  readonly id?: string 
+  readonly id?: string
   username: string
   email: string
-  password: string
-  // new_password?: string
+  password?: string
+  new_password?: string
   phone_number: string
   first_name?: string
   last_name?: string
 }
 
 export type UserProfileDetailsType = UserDetailsType & {
-  requests: PostDetailsType[]
+  requests: TripDetailsType[]
 }
 
-export type PostDetailsType = {
+export type TripDetailsType = TripDetailsFormType & {
   "id": string
+  "passenger_id": number
+}
+
+export type TripDetailsFormType = {
   "pickup": string
   "dropoff": string
   "number_of_passengers": string
   "number_of_luggages": string
-  "passenger_id": number
   "date_time": string
+}
+
+export type CountryISType = {
+  ip: string
+  country: string
+}
+
+export type StateOfCountryDetailsType = {
+  id: number
+  name: string
+  iso2: string
+}
+
+export type CountryDetailsType = {
+  id: number
+  name: string
+  iso3: string
+  iso2: string
+  phonecode: string
+  capital: string
+  currency: string
+  native: string
+  emoji: string
+  emojiU: string
+}
+
+export type EditModeDetailsType = {
+  isEditMode: false
+} | {
+  isEditMode: true
+  requestID: number
 }
