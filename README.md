@@ -14,7 +14,7 @@
 ### https://www.elephantsql.com/
 
 ## Deployed on:
-### https://snap-react-app-amin-mashayekhan.vercel.app/
+### snap-react-app.vercel.app
 
 #### miladjangjooo@gmail.com
 #### pass: AminMilad
