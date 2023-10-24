@@ -23,7 +23,7 @@ export default function UserPage() {
   useEffect(() => {
     getUserByID()
   }, [])
-  
+
 
 
   async function getUserByID() {
