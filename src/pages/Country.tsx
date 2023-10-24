@@ -1,12 +1,11 @@
 import { CountryDetailsType, CountryISType, StateOfCountryDetailsType } from '../types'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Spinner } from 'react-bootstrap'
 
 const Country = () => {
     const [pageLoading, setPageLoading] = useState(false)
     const [countryIS, setCountryIS] = useState<CountryISType>({} as CountryISType)
-    console.log("🚀 ~ file: Country.tsx:9 ~ Country ~ countryIS:", countryIS)
     const [statesOfCountryList, setStatesOfCountryList] = useState<StateOfCountryDetailsType[]>([
         {
             // "id": 4008,
