@@ -9,21 +9,21 @@ const Country = () => {
     console.log("🚀 ~ file: Country.tsx:9 ~ Country ~ countryIS:", countryIS)
     const [statesOfCountryList, setStatesOfCountryList] = useState<StateOfCountryDetailsType[]>([
         {
-            "id": 4008,
-            "name": "Maharashtra",
-            "iso2": "MH"
+            // "id": 4008,
+            // "name": "Maharashtra",
+            // "iso2": "MH"
         },] as StateOfCountryDetailsType[])
     const [countryDetails, setCountryDetails] = useState<CountryDetailsType>({
-        "id": 101,
-        "name": "India",
-        "iso3": "IND",
-        "iso2": "IN",
-        "phonecode": "91",
-        "capital": "New Delhi",
-        "currency": "INR",
-        "native": "भारत",
-        "emoji": "🇮🇳",
-        "emojiU": "U+1F1EE U+1F1F3"
+        // "id": 101,
+        // "name": "India",
+        // "iso3": "IND",
+        // "iso2": "IN",
+        // "phonecode": "91",
+        // "capital": "New Delhi",
+        // "currency": "INR",
+        // "native": "भारत",
+        // "emoji": "🇮🇳",
+        // "emojiU": "U+1F1EE U+1F1F3"
     } as CountryDetailsType)
 
 
@@ -60,10 +60,8 @@ const Country = () => {
             method: 'GET',
             headers: {
                 'X-CSCAPI-KEY': 'NzBiMFlIaHZZcXN1b0l1S1ZHWHNYVEJ2WHkxa1ZFdk8yNXV4SFhWUA==',
-                // 'Content-Type': 'application/json',
             },
             redirect: 'follow',
-            // body: JSON.stringify(formUserDetails)
         })
 
         const data = await res.json()
@@ -75,10 +73,8 @@ const Country = () => {
             method: 'GET',
             headers: {
                 'X-CSCAPI-KEY': 'NzBiMFlIaHZZcXN1b0l1S1ZHWHNYVEJ2WHkxa1ZFdk8yNXV4SFhWUA==',
-                // 'Content-Type': 'application/json',
             },
             redirect: 'follow',
-            // body: JSON.stringify(formUserDetails)
         })
 
         const data1 = await res1.json()
@@ -133,10 +129,12 @@ const Country = () => {
                                     </table>
                                 </div>
                             </div>
-                            <div className="tab-pane fade d-flex flex-wrap" id="country-states" role="tabpanel" aria-labelledby="country-states-tab" tabIndex={0}>
-                                {statesOfCountryList.map((state: StateOfCountryDetailsType, i: number) => {
-                                    return <p className="badge fs-6 bg-info me-2 text-black" key={i}>{i + 1}- {state.name}</p>;
-                                })}
+                            <div className="tab-pane fade" id="country-states" role="tabpanel" aria-labelledby="country-states-tab" tabIndex={0}>
+                                <div className=' d-flex flex-wrap'>
+                                    {statesOfCountryList.map((state: StateOfCountryDetailsType, i: number) => {
+                                        return <p className="badge fs-6 bg-info me-2 text-black" key={i}>{i + 1}- {state.name}</p>;
+                                    })}
+                                </div>
                             </div>
 
                         </div>
