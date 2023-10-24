@@ -9,6 +9,7 @@ import { Toast } from "../components/Toast"
 import { UserProfileDetailsType } from "../types"
 import { UserContext } from "../contexts/UserProvider"
 import { apiRoot } from "../app.config"
+import jwt_decode from "jwt-decode";
 
 export default function UserPage() {
   const [pageLoading, setPageLoading] = useState(true)
@@ -16,13 +17,17 @@ export default function UserPage() {
   const navigate = useNavigate();
   const { username } = useParams()
   const { user } = useContext(UserContext)
+  // sub equals to passenger_id
+  const { sub } = jwt_decode(user.token) as { sub: number };
 
   useEffect(() => {
     getUserByID()
   }, [])
+  
+
 
   async function getUserByID() {
-    const res = await fetch(`${apiRoot}/passenger/80`, {
+    const res = await fetch(`${apiRoot}/passenger/${sub}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
