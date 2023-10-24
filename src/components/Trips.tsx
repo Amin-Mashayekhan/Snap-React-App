@@ -32,15 +32,24 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
 
   async function handleSubmitForm(e: FormEvent<HTMLElement>) {
     e.preventDefault()
+    if (pickupField.current!.value &&
+      dropoffField.current!.value &&
+      numberOfPassengersField.current!.value &&
+      numberOfLuggagesField.current!.value &&
+      dateTimeField.current!.value) {
 
-    const formUserDetails: TripDetailsFormType = {
-      pickup: pickupField.current!.value,
-      dropoff: dropoffField.current!.value,
-      number_of_passengers: numberOfPassengersField.current!.value,
-      number_of_luggages: numberOfLuggagesField.current!.value,
-      date_time: dateTimeField.current!.value,
+      const formUserDetails: TripDetailsFormType = {
+        pickup: pickupField.current!.value,
+        dropoff: dropoffField.current!.value,
+        number_of_passengers: numberOfPassengersField.current!.value,
+        number_of_luggages: numberOfLuggagesField.current!.value,
+        date_time: dateTimeField.current!.value,
+      }
+      await registerUserTrip(formUserDetails)
+    } else {
+      Toast('error', 'Please fill in all of required fields.')
     }
-    await registerUserTrip(formUserDetails)
+
   }
 
 
@@ -64,7 +73,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
         setTripList((prevState) => {
           return prevState.map((trip) => {
             if (trip.id === editMode.requestID) {
-              return data 
+              return data
             }
             return trip
           })
@@ -101,7 +110,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
       Toast('success', 'Deleting was done successfully.')
       const data = await res.json()
       console.log(data)
-      setTripList((prevState) =>{
+      setTripList((prevState) => {
         return prevState.filter((trip) => {
           return trip.id !== tripDetails.id
         })
@@ -158,7 +167,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
                         <InputComponent name='number_of_luggages' type='text' ref={numberOfLuggagesField} required />
                       </div>
                       <div className="col-md-4">
-                        <InputComponent name='date_time' id="datePicker" type='text'  ref={dateTimeField} defaultValue="2012-3-23" required />
+                        <InputComponent name='date_time' id="datePicker" type='text' ref={dateTimeField} required />
                       </div>
                     </>
 
