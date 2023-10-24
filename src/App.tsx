@@ -1,20 +1,32 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
-// import Container from 'react-bootstrap/Container';
+import Body from './components/Body';
+import Country from './pages/Country';
 import DeleteForm from './components/forms/DeleteForm';
-// import Heading from './components/Heading';
 import LoginForm from './components/forms/LoginForm';
 import Logout from './components/Logout';
 import MatrixPage from './pages/MatrixPage';
-// import PostForm from './components/forms/PostForm';
-// import { UserContext } from './contexts/UserProvider';
+import { UserContext } from './contexts/UserProvider';
 import UserForm from './components/forms/UserForm';
 import UserPage from './pages/UserPage';
 import Users from './pages/Users';
 import { useContext } from 'react';
-import { UserContext } from './contexts/UserProvider';
-import Body from './components/Body';
-import Country from './pages/Country';
+
+// import Container from 'react-bootstrap/Container';
+
+// import Heading from './components/Heading';
+
+
+
+// import PostForm from './components/forms/PostForm';
+// import { UserContext } from './contexts/UserProvider';
+
+
+
+
+
+
+
 
 // import { useContext } from 'react';
 function App(): JSX.Element {
@@ -27,11 +39,7 @@ function App(): JSX.Element {
         </FormPage> */}
       <Routes>
         <Route path='/' element={
-          user.token ? (
-            <MatrixPage />
-          ) : (
-            <Body />
-          )
+            <Body sidebar />
         }
         />
         <Route path='/register' element={
