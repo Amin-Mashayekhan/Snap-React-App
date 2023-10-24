@@ -26,6 +26,7 @@ export default function PostForm() {
       console.log(data)
     } else if (res.status === 401) {
       // 401 Unauthorized
+      Toast('error', 'For the security of your account, please login again.')
       navigate('/logout')
     } else Toast('error', 'An error occurred, please try again.')
   }
