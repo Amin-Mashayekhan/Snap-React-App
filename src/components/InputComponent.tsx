@@ -2,6 +2,7 @@ import React from 'react'
 
 interface inputProps {
     type: "text" | "password" | "email" | "number" | "date";
+    id?: string
     name: string;
     required?: boolean;
     placeholder?: string;
