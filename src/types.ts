@@ -20,7 +20,7 @@ export type UserProfileDetailsType = UserDetailsType & {
 
 export type TripDetailsType = TripDetailsFormType & {
   "id": string
-  "passenger_id": number
+  "passenger_id": string
 }
 
 export type TripDetailsFormType = {
@@ -59,5 +59,5 @@ export type EditModeDetailsType = {
   isEditMode: false
 } | {
   isEditMode: true
-  requestID: number
+  requestID: string
 }
