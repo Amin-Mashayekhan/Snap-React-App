@@ -1,10 +1,10 @@
 import { FormEvent, useContext, useEffect, useRef, useState } from 'react'
 
-import { useNavigate } from 'react-router-dom'
-import { apiRoot } from '../../app.config'
 import InputComponent from '../InputComponent'
 import { Toast } from '../Toast'
 import { UserContext } from '../../contexts/UserProvider'
+import { apiRoot } from '../../app.config'
+import { useNavigate } from 'react-router-dom'
 
 export default function DeleteForm() {
 
@@ -37,7 +37,6 @@ export default function DeleteForm() {
     })
     setPageLoading(false)
     if (res.ok) {
-      console.log('good response')
       Toast('success', 'Deleting was done successfully.')
       const data = await res.json()
       console.log(data)
@@ -48,7 +47,6 @@ export default function DeleteForm() {
       navigate('/logout')
     } else {
       Toast('error', 'An error occurred, please try again.')
-      console.log('bad response')
     }
   }
 
