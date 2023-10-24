@@ -41,27 +41,29 @@ export default function UserForm(props: userFormProps) {
 
   async function handleRegisterData(e: FormEvent<HTMLElement>) {
     e.preventDefault()
-    console.log("🚀 ~ file: UserForm.tsx:44 ~ handleRegisterData ~ e:", e)
-
-    const formUserDetails: UserDetailsType = {
-      username: usernameField.current!.value,
-      password: passwordField.current!.value,
-      email: emailField.current!.value,
-      phone_number: phoneNumberField.current!.value,
+    if (usernameField.current?.value && phoneNumberField.current?.value && emailField.current?.value) {
+      const formUserDetails: UserDetailsType = {
+        username: usernameField.current!.value,
+        password: passwordField.current!.value,
+        email: emailField.current!.value,
+        phone_number: phoneNumberField.current!.value,
+      }
+      if (!props.edit) {
+        formUserDetails.password = passwordField.current!.value
+      }
+      if (fNameField.current!.value) {
+        formUserDetails.first_name = fNameField.current?.value
+      }
+      if (lNameField.current!.value) {
+        formUserDetails.last_name = lNameField.current?.value
+      }
+      if (props.edit) {
+        formUserDetails.new_password = newPasswordField.current?.value
+      }
+      await registerUser(formUserDetails)
+    } else {
+      Toast('error', 'Please fill in all of required fields.')
     }
-    if (!props.edit) {
-      formUserDetails.password = passwordField.current!.value
-    }
-    if (fNameField.current!.value) {
-      formUserDetails.first_name = fNameField.current?.value
-    }
-    if (lNameField.current!.value) {
-      formUserDetails.last_name = lNameField.current?.value
-    }
-    if (props.edit) {
-      formUserDetails.new_password = newPasswordField.current?.value
-    }
-    await registerUser(formUserDetails)
   }
 
 
@@ -128,7 +130,7 @@ export default function UserForm(props: userFormProps) {
                 <InputComponent name='last_name' type='text' {...(props.edit && { defaultValue: props.userProfileDetails.last_name || '' })} ref={lNameField} />
               </div>
               <div className="col-md-4">
-                <InputComponent name='password' type='password' ref={passwordField} {...( !props.edit && {required: true})} />
+                <InputComponent name='password' type='password' ref={passwordField} {...(!props.edit && { required: true })} />
               </div>
 
               {
