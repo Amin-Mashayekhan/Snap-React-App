@@ -81,7 +81,12 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
         Toast('success', 'Editing was done successfully.')
         handleEditClick(data)
       } else {
-        Toast('success', 'Registration was done successfully.')
+        if (data.id && data.pickup) {
+          setTripList(prevState => {
+            return [ ...prevState, data] 
+          })
+        }
+        Toast('success', 'Addition was done successfully.')
       }
     } else if (res.status === 401) {
       // 401 Unauthorized
