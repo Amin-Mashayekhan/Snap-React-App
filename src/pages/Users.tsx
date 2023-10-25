@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Users() {
   const [users, setUsers] = useState<Array<Partial<UserDetailsType>>>([]);
-  console.log("🚀 ~ file: Users.tsx:10 ~ Users ~ users:", users)
   const [pageLoading, setPageLoading] = useState(true)
 
   useEffect(() => {
@@ -35,7 +34,7 @@ export default function Users() {
 
   return (
     <>
-      <h3>Users</h3>
+      <h3>Other Passengers</h3>
       {
         pageLoading ? (
           <Spinner className="mx-auto" />
