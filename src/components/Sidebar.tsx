@@ -35,19 +35,19 @@ export default function Sidebar() {
               user.token && (
                 <>
                   <li className="nav-item">
-                    <Link to='/' className="nav-link" >Home</Link>
+                    <Link onClick={() => setIsNavbarOpen(false)} to='/' className="nav-link" >Home</Link>
                   </li>
                   <li className="nav-item">
                     <Link to={`/user/${user.username}`} className="nav-link" >My Page</Link>
                   </li>
                   <li className="nav-item">
-                    <Link to='/users' className="nav-link" >Other Passengers</Link>
+                    <Link onClick={() => setIsNavbarOpen(false)} to='/users' className="nav-link" >Other Passengers</Link>
                   </li>
                   {/* <li className="nav-item">
                     <Link to='/feed' className="nav-link" >Posts</Link>
                   </li> */}
                   <li className="nav-item">
-                    <Link to='/country' className="nav-link" >Country (API)</Link>
+                    <Link onClick={() => setIsNavbarOpen(false)} to='/country' className="nav-link" >Country (API)</Link>
                   </li>
                 </>
               )
