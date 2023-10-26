@@ -83,7 +83,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
       } else {
         if (data.id && data.pickup) {
           setTripList(prevState => {
-            return [ ...prevState, data] 
+            return [...prevState, data]
           })
         }
         Toast('success', 'Addition was done successfully.')
@@ -100,32 +100,34 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
 
 
   async function handleDeleteData(tripDetails: TripDetailsType) {
-    setPageLoading(true)
-    const { id, ...restOfData } = tripDetails
-    const res = await fetch(`${apiRoot}/request/${id}`, {
-      method: "DELETE",
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${user.token!}`
-      },
-      body: JSON.stringify(restOfData)
-    })
-    setPageLoading(false)
-    if (res.ok) {
-      Toast('success', 'Deleting was done successfully.')
-      const data = await res.json()
-      console.log(data)
-      setTripList((prevState) => {
-        return prevState.filter((trip) => {
-          return trip.id !== tripDetails.id
-        })
+    if (confirm('Are you sure you want to delete this')) {
+      setPageLoading(true)
+      const { id, ...restOfData } = tripDetails
+      const res = await fetch(`${apiRoot}/request/${id}`, {
+        method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.token!}`
+        },
+        body: JSON.stringify(restOfData)
       })
-    } else if (res.status === 401) {
-      // 401 Unauthorized
-      Toast('error', 'For the security of your account, please login again.')
-      navigate('/logout')
-    } else {
-      Toast('error', 'An error occurred, please try again.')
+      setPageLoading(false)
+      if (res.ok) {
+        Toast('success', 'Deleting was done successfully.')
+        const data = await res.json()
+        console.log(data)
+        setTripList((prevState) => {
+          return prevState.filter((trip) => {
+            return trip.id !== tripDetails.id
+          })
+        })
+      } else if (res.status === 401) {
+        // 401 Unauthorized
+        Toast('error', 'For the security of your account, please login again.')
+        navigate('/logout')
+      } else {
+        Toast('error', 'An error occurred, please try again.')
+      }
     }
   }
 
