@@ -14,6 +14,10 @@ export default function UserProvider({ children }: {
 }) {
 
   const reducer = (user: LoggedUserDetailsType, newUser: LoggedUserDetailsType) => {
+    if (!newUser.token && !user.username) {
+      localStorage.clear()
+      return newUser
+    }
     if (user.token !== newUser.token) {
       localStorage.setItem('token', newUser.token);
     }
@@ -21,14 +25,14 @@ export default function UserProvider({ children }: {
       localStorage.setItem('username', newUser.username);
     }
     return newUser;
-  } 
+  }
 
-  const [user, setUser] = useReducer(reducer ,{
+  const [user, setUser] = useReducer(reducer, {
     username: localStorage.getItem('username') || '',
     token: localStorage.getItem('token') || ''
   });
 
-  
+
   const value = {
     user,
     setUser,
