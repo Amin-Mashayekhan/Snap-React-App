@@ -1,13 +1,13 @@
 # Snap React App
 
 
-## react moalem
+## Teacher's react
 ### https://github.com/VanLance/Matrix-Social-React.git
 
-## server milad
+## Milad's server
 ### https://snaptransportation.onrender.com/ 
 
-## flask milad
+## Milad's flask 
 ### https://github.com/MiladJangjoo/snap
 
 ## datasql
