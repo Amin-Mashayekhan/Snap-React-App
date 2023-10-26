@@ -1,9 +1,10 @@
 // import { Link, NavLink } from 'react-router-dom'
 
+import { useContext, useState } from 'react';
+
 import { Link } from 'react-router-dom';
 import { UserContext } from '../contexts/UserProvider';
 import logo from './../assets/images/logo.jpg';
-import { useContext, useState } from 'react';
 
 // import Nav from 'react-bootstrap/esm/Nav'
 // import { Navbar } from 'react-bootstrap'
@@ -38,7 +39,7 @@ export default function Sidebar() {
                     <Link onClick={() => setIsNavbarOpen(false)} to='/' className="nav-link" >Home</Link>
                   </li>
                   <li className="nav-item">
-                    <Link to={`/user/${user.username}`} className="nav-link" >My Page</Link>
+                    <Link  onClick={() => setIsNavbarOpen(false)} to={`/user/${user.username}`} className="nav-link" >My Page</Link>
                   </li>
                   <li className="nav-item">
                     <Link onClick={() => setIsNavbarOpen(false)} to='/users' className="nav-link" >Other Passengers</Link>
@@ -55,7 +56,7 @@ export default function Sidebar() {
             {
               user.token && (
                 <li className="nav-item d-flex align-items-end ms-auto">
-                  <Link to='/logout' className=" btn btn-outline-light" >Logout</Link>
+                  <Link  onClick={() => setIsNavbarOpen(false)} to='/logout' className=" btn btn-outline-light" >Logout</Link>
                 </li>
               )
             }
