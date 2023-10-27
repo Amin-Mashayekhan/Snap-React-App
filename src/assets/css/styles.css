@@ -143,6 +143,10 @@ body{
 	padding-bottom: 1.6rem;
 }
 
+.caption .card {
+	max-height: 661px;
+}
+
 
 .btn-lg{
 	border-width: medium;
