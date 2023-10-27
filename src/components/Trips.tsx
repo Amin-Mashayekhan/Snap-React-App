@@ -54,7 +54,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
 
 
   async function registerUserTrip(formUserDetails: TripDetailsFormType) {
-    const endpoint = editMode.isEditMode ? `request/${editMode.requestID}` : 'request'
+    const endpoint = editMode.isEditMode ? `request/${editMode.requestID}` : 'request/'
     setPageLoading(true);
     const res = await fetch(`${apiRoot}/${endpoint}`, {
       method: editMode.isEditMode ? 'PUT' : 'POST',
