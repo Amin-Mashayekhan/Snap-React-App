@@ -100,7 +100,7 @@ export default function Trips({ userTrips }: { userTrips: TripDetailsType[] }) {
 
 
   async function handleDeleteData(tripDetails: TripDetailsType) {
-    if (confirm('Are you sure you want to delete this')) {
+    if (confirm('Are you sure you want to delete this item?')) {
       setPageLoading(true)
       const { id, ...restOfData } = tripDetails
       const res = await fetch(`${apiRoot}/request/${id}`, {
